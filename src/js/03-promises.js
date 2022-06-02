@@ -2,7 +2,7 @@
 function runPromise(position) {
   
   return new Promise((resolve, reject) => {
-  const shouldResolve = Math.random() > 0.5;
+  const shouldResolve = Math.random() > 0.1;
   const delay = 200
   
   setTimeout(() => {
@@ -36,7 +36,8 @@ function runPromise(position) {
 
 const horses = [
   '1',
-  '2'
+  '2',
+  '3'
 ];
 
 const promises = horses.map(runPromise);
@@ -44,7 +45,17 @@ const promises = horses.map(runPromise);
 console.log(promises);
 
 
-Promise.all(promises).then(x => {console.log(x)});
+Promise.all(promises)
+.then( y  => {console.log(y)})
+.catch(x => {console.log(x)})
+
+
+
+
+// .then(({ position, delay }) => {console.log(`✅ Fulfilled promise ${position} in ${delay}ms`)})
+// .catch(({ position, delay }) => {
+//         console.log(`❌ Rejected promise ${position} in ${delay}ms`);
+//       });
 
 // .then(({ position, delay }) => {
 //   console.log(`✅ Fulfilled promise ${position} in ${delay}ms`)
