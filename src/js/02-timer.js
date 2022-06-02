@@ -1,10 +1,9 @@
 // // Описан в документации
 import flatpickr from "flatpickr";
-
 // Дополнительный импорт стилей
 import "flatpickr/dist/flatpickr.min.css";
 
-
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 
 const startBtn = document.querySelector("[data-start]");
@@ -13,8 +12,8 @@ const hoursEl = document.querySelector('[data-hours]');
 const minutesEl = document.querySelector('[data-minutes]');
 const secondsEl = document.querySelector('[data-seconds]');
 
-startBtn.addEventListener('click', stbtnclick)
-
+startBtn.addEventListener('click', stbtnclick);
+startBtn.setAttribute('disabled', true); 
 
 
 let futureDate = 0;
@@ -22,26 +21,22 @@ let currentTime = Date.now();
 let timerInterval = null;
 let difference = 0;
 let isActiveTimer = false;
-let isActiveCount = true;
+let btnActive = false;
 
 
-
-let btnActive=false
-// let isAble = true;
 function check() {
     currentTime = Date.now();
+
     if(futureDate < currentTime) {
-        window.alert("Please choose a date in the future");
+        Notify.failure('Please choose a date in the future');
         startBtn.setAttribute('disabled', true); 
-        btnActive=false
-    } 
-    else{
+        btnActive = false;
+    } else{
         startBtn.removeAttribute('disabled');
-        btnActive=true
+        btnActive = true;
     }
       
 }
-
 
 
 
@@ -50,46 +45,32 @@ const options = {
     time_24hr: true,
     defaultDate: new Date(),
     minuteIncrement: 1,
+    // dateFormat: "Y-m-d",
     // minDate: currentTime,
-    // dateFormat: "U",
 
     onClose(selectedDates) {
-       
+
+        if(isActiveTimer == true) {
+            Notify.failure('Timer is now running');
+            btnActive = false;
+            return
+        }
+
         futureDate = selectedDates[0];
-        check()
-        // console.log(futureDate);
-        
-        // if(futureDate < currentTime) {
-        //     console.log('less');
-        //     window.alert("Please choose a date in the future");
-        //     // isAble = false;
-        //     startBtn.setAttribute('disabled', true); 
-        //     return
-        // } 
-
-        // isAble = true;    
-        // startBtn.setAttribute('disabled', false);
-        
-
-    //   console.log(selectedDates[0]);
+        check();
     },
   };
 
 
 flatpickr("#datetime-picker", options)
 
-
-const watch = {
-    
-  start() {
+function watchStart() {
     timerInterval = setInterval(() => {
         currentTime  = Date.now();
-        //   console.log(currentTime);
         
         difference = futureDate - currentTime;
-        console.log(difference);
-      
-        console.log(convertMs(difference));
+        // console.log(difference);
+        // console.log(convertMs(difference));
         
         daysEl.innerHTML = convertMs(difference).days
         hoursEl.innerHTML = convertMs(difference).hours
@@ -97,41 +78,23 @@ const watch = {
         secondsEl.innerHTML = convertMs(difference).seconds
 
         if(difference < 1000) {
-            console.log("less 1000");
-            isActiveCount = false;
-
-        }
-        if(!isActiveCount) {
+            isActiveTimer = false;
             clearInterval(timerInterval);
-            isActiveTimer=false
         }
-
-    
-      }, 1000)
-
-    //   console.log(currentTime);
-    //   console.log('lo' + futureDate);
-      
-  },
-
-};
-
+        }, 1000)
+}
 
 
 function stbtnclick() {
-    check()
-    // if(!isAble) {
-    //     return
-    // }
-if(btnActive==true && isActiveTimer==false){
-    watch.start();
-    isActiveTimer = true;
+    check();
+
+    if(btnActive==true && isActiveTimer==false){
+        watchStart();
+        isActiveTimer = true;
+        Notify.success('Timer has been started');
+    }
 }
 
-
-}
-
-// console.log('lo' + futureDate);
 
 
 
@@ -153,11 +116,6 @@ function convertMs(ms) {
 
   return { days, hours, minutes, seconds };
 }
-
-// console.log(convertMs(2000)); // {days: 0, hours: 0, minutes: 0, seconds: 2}
-// console.log(convertMs(140000)); // {days: 0, hours: 0, minutes: 2, seconds: 20}
-// console.log(convertMs(24140000)); // {days: 0, hours: 6 minutes: 42, seconds: 20}
-
 
 function addLeadingZero(value) {
     return String(value).padStart(2, '0');
