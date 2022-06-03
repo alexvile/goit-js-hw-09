@@ -12,7 +12,7 @@ const sumbmitBtn = document.querySelector('[type=submit]');
 let firstDelayValue = 0;
 let stepValue = 0;
 let amountValue = 0;
-
+// let isActiveInterval = false;
 
 
 formEl.addEventListener('input', onFormInput);
@@ -27,6 +27,11 @@ sumbmitBtn.addEventListener('click', onSubmitClick);
 
 function onSubmitClick(e) {
   e.preventDefault();
+
+  //   if (isActiveInterval) {
+  //       return
+  // };
+  
   callCreatePromises(firstDelayValue, stepValue, amountValue);
 }
 
@@ -38,10 +43,12 @@ function createPromise(position, delay) {
   return new Promise((resolve, reject) => {
 
     if(shouldResolve){
-      resolve(`Fulfilled promise ${position} in ${Date.now() - delay}ms`)
+      // resolve(`Fulfilled promise ${position} in ${Date.now() - delay}ms`)
+       resolve(`Fulfilled promise ${position} in ${delay}ms`)
     }
     else {
-      reject(`Rejected promise ${position} in ${Date.now() - delay}ms`)
+      // reject(`Rejected promise ${position} in ${Date.now() - delay}ms`)
+      reject(`Rejected promise ${position} in ${delay}ms`)
     }
   
   });
@@ -52,25 +59,31 @@ function createPromise(position, delay) {
 function callCreatePromises(firstDelay, step, amount) {
     let counter = 0
 
-  const timeBefore = Date.now()
+  // const timeBefore = Date.now()
+  let timing = Number(firstDelay);
+  
 
-
-    setTimeout(() => {
+  setTimeout(() => {
+      // isActiveInterval = true;
 
         const timerId2 = setInterval(() => {
           counter += 1;
+          timing += Number(step);
+
           if(counter > amount) {
             clearInterval(timerId2);
             return
           }
-          createPromise(counter, timeBefore)
+          // createPromise(counter, timeBefore)
+          createPromise(counter, timing)
           .then(resolve => {  Notify.success(resolve); console.log(resolve)} )
           .catch(error => { Notify.failure(error); console.log(error)});
     
       }, step)
 
-    
     }, firstDelay)
+    
+   
 }
 
 
