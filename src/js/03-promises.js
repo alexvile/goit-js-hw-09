@@ -60,7 +60,7 @@ function callCreatePromises(firstDelay, step, amount) {
     let counter = 0
 
   // const timeBefore = Date.now()
-  let timing = Number(firstDelay);
+  let timing = Number(firstDelay) - step;
   
 
   setTimeout(() => {
