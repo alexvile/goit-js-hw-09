@@ -31,7 +31,10 @@ function onSubmitClick(e) {
   //   if (isActiveInterval) {
   //       return
   // };
-  
+  if ((amountValue == 0) || (amountValue < 0)){
+    Notify.failure('Amount must be more then 0 and input must not be blank');
+    return
+  }
   callCreatePromises(firstDelayValue, stepValue, amountValue);
 }
 
@@ -57,14 +60,19 @@ function createPromise(position, delay) {
 
 
 function callCreatePromises(firstDelay, step, amount) {
-    let counter = 0
-
+  let counter = 1
   // const timeBefore = Date.now()
-  let timing = Number(firstDelay) - step;
   
+  let timing = Number(firstDelay);
 
   setTimeout(() => {
       // isActiveInterval = true;
+    
+     createPromise(counter, firstDelay)
+      .then(resolve => {  Notify.success(resolve); console.log(resolve)} )
+      .catch(error => { Notify.failure(error); console.log(error) });
+    
+    if(amount >= 2) {
 
         const timerId2 = setInterval(() => {
           counter += 1;
@@ -79,13 +87,13 @@ function callCreatePromises(firstDelay, step, amount) {
           .then(resolve => {  Notify.success(resolve); console.log(resolve)} )
           .catch(error => { Notify.failure(error); console.log(error)});
     
-      }, step)
+        }, step)
+      
+      }
 
     }, firstDelay)
     
    
 }
-
-
 
 
